@@ -437,33 +437,33 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 9999
 ScreenGui.Enabled = true
 
-local uiFrame=Instance.new("Frame")
-uiFrame.Size=UDim2.new(0,350,0,100)
-uiFrame.Position=UDim2.new(0.5,-175,0.5,-50)
-uiFrame.BackgroundColor3=Color3.fromRGB(0,0,0)
-uiFrame.BackgroundTransparency=0.7
-uiFrame.BorderSizePixel=0
-uiFrame.AnchorPoint=Vector2.new(0.5,0.5)
-uiFrame.Active=true
-uiFrame.Draggable=true
-uiFrame.Parent=ScreenGui
+local uiFrame = Instance.new("Frame")
+uiFrame.Size = UDim2.new(0,350,0,100)
+uiFrame.Position = UDim2.new(1,-20,0,20)
+uiFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+uiFrame.BackgroundTransparency = 0.7
+uiFrame.BorderSizePixel = 0
+uiFrame.AnchorPoint = Vector2.new(1,0)
+uiFrame.Active = true
+uiFrame.Draggable = true
+uiFrame.Parent = ScreenGui
 
-local UICorner=Instance.new("UICorner")
-UICorner.CornerRadius=UDim.new(0,12)
-UICorner.Parent=uiFrame
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0,12)
+UICorner.Parent = uiFrame
 
-local button=Instance.new("TextButton")
-button.Size=UDim2.new(0,300,0,60)
-button.Position=UDim2.new(0.5,-150,0.5,-30)
-button.Text="TRADEBOT: OFF"
-button.BackgroundColor3=Color3.fromRGB(255,0,0)
-button.TextColor3=Color3.fromRGB(255,255,255)
-button.TextScaled=true
-button.Parent=uiFrame
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0,300,0,60)
+button.Position = UDim2.new(0.5,-150,0.5,-30)
+button.Text = "TRADEBOT: OFF"
+button.BackgroundColor3 = Color3.fromRGB(255,0,0)
+button.TextColor3 = Color3.fromRGB(255,255,255)
+button.TextScaled = true
+button.Parent = uiFrame
 
-local buttonCorner=Instance.new("UICorner")
-buttonCorner.CornerRadius=UDim.new(0,12)
-buttonCorner.Parent=button
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0,12)
+buttonCorner.Parent = button
 
 if _G.TradeBotActive then
 	button.Text = "TRADEBOT: ON"
