@@ -4,8 +4,26 @@ local TextChatService = game:GetService("TextChatService")
 local LocalPlayer = Players.LocalPlayer
 local HttpService = game:GetService("HttpService")
 
-local isUserAllowed = true
-if not isUserAllowed then return end
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+local function SelectDevice()
+	while task.wait(0.1) do
+		local DeviceSelectGui = LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("DeviceSelect")
+		if DeviceSelectGui then
+			local Container = DeviceSelectGui:WaitForChild("Container")
+			local Mouse = LocalPlayer:GetMouse()
+			local button = Container:WaitForChild("Tablet"):WaitForChild("Button")
+			local ButtonPos = button.AbsolutePosition
+			local ButtonSize = button.AbsoluteSize
+			local CenterX = ButtonPos.X + ButtonSize.X / 2
+			local CenterY = ButtonPos.Y + ButtonSize.Y / 2
+
+			VirtualInputManager:SendMouseButtonEvent(CenterX, CenterY, 0, true, game, 1)
+			VirtualInputManager:SendMouseButtonEvent(CenterX, CenterY, 0, false, game, 1)
+		end
+	end
+end
+task.spawn(SelectDevice)
 
 local TradeFolder = ReplicatedStorage:WaitForChild("Trade")
 local acceptRequest = TradeFolder:WaitForChild("AcceptRequest")
