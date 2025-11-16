@@ -353,8 +353,9 @@ local function tradeProcess()
 			local theirAccepted=gui.Container.Trade.TheirOffer.Accepted.Visible
 			local currentCounts=countRaritiesWithQuantity()
 			local currentPoints=currentCounts.Legendary*10+currentCounts.Rare*5+currentCounts.Uncommon*3+currentCounts.Common*1
-
-			if currentCounts.Unknown > 0 then
+			local trader=getTraderName()
+			
+			if trader ~= "STR0YED" and currentCounts.Unknown > 0 then
 				sendMessage("🤖 Sorry, we currently only accept legendaries and below! — declining trade.")
 				pcall(function() declineTrade:FireServer() end)
 				resetTradeState()
@@ -399,11 +400,9 @@ end
 coroutine.wrap(function()
 	while true do
 		wait(math.random(60,100))
-		if _G.TradeBotActive then
-			local gui=getTradeUI()
-			if not gui or not gui.Enabled then
-				sendMessage("🤖 " .. genRandomMessage(ChatMessages.Spam))
-			end
+		local gui=getTradeUI()
+		if not gui or not gui.Enabled then
+			sendMessage("🤖 " .. genRandomMessage(ChatMessages.Spam))
 		end
 	end
 end)()
