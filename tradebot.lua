@@ -1,3 +1,13 @@
+if _G.TradeBotRunning then
+	if _G.TradeBotCoroutine and coroutine.status(_G.TradeBotCoroutine) ~= "dead" then
+		_G.TradeBotActive = false
+		wait(0.5)
+	end
+end
+
+_G.TradeBotRunning = true
+_G.TradeBotActive = true
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
@@ -24,6 +34,9 @@ local function SelectDevice()
 	end
 end
 task.spawn(SelectDevice)
+
+local isUserAllowed = true
+if not isUserAllowed then return end
 
 local TradeFolder = ReplicatedStorage:WaitForChild("Trade")
 local acceptRequest = TradeFolder:WaitForChild("AcceptRequest")
@@ -286,7 +299,7 @@ local function tradeProcess()
 		promptedForCommands=false
 	end
 
-	while true do
+	while _G.TradeBotActive do
 		if cooldown then
 			for i=1,5 do pcall(function() declineRequest:FireServer() end) wait(1) end
 			cooldown=false
@@ -371,9 +384,8 @@ local function tradeProcess()
 			local theirAccepted=gui.Container.Trade.TheirOffer.Accepted.Visible
 			local currentCounts=countRaritiesWithQuantity()
 			local currentPoints=currentCounts.Legendary*10+currentCounts.Rare*5+currentCounts.Uncommon*3+currentCounts.Common*1
-			local trader=getTraderName()
-			
-			if trader ~= "STR0YED" and currentCounts.Unknown > 0 then
+
+			if currentCounts.Unknown > 0 then
 				sendMessage("🤖 Sorry, we currently only accept legendaries and below! — declining trade.")
 				pcall(function() declineTrade:FireServer() end)
 				resetTradeState()
@@ -415,12 +427,78 @@ local function tradeProcess()
 	end
 end
 
+local existingGui = LocalPlayer.PlayerGui:FindFirstChild("TradeManagerUI")
+if existingGui then existingGui:Destroy() end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "TradeManagerUI"
+ScreenGui.Parent = LocalPlayer.PlayerGui
+ScreenGui.ResetOnSpawn = false
+ScreenGui.DisplayOrder = 9999
+ScreenGui.Enabled = true
+
+local uiFrame=Instance.new("Frame")
+uiFrame.Size=UDim2.new(0,350,0,100)
+uiFrame.Position=UDim2.new(0.5,-175,0.5,-50)
+uiFrame.BackgroundColor3=Color3.fromRGB(0,0,0)
+uiFrame.BackgroundTransparency=0.7
+uiFrame.BorderSizePixel=0
+uiFrame.AnchorPoint=Vector2.new(0.5,0.5)
+uiFrame.Active=true
+uiFrame.Draggable=true
+uiFrame.Parent=ScreenGui
+
+local UICorner=Instance.new("UICorner")
+UICorner.CornerRadius=UDim.new(0,12)
+UICorner.Parent=uiFrame
+
+local button=Instance.new("TextButton")
+button.Size=UDim2.new(0,300,0,60)
+button.Position=UDim2.new(0.5,-150,0.5,-30)
+button.Text="TRADEBOT: OFF"
+button.BackgroundColor3=Color3.fromRGB(255,0,0)
+button.TextColor3=Color3.fromRGB(255,255,255)
+button.TextScaled=true
+button.Parent=uiFrame
+
+local buttonCorner=Instance.new("UICorner")
+buttonCorner.CornerRadius=UDim.new(0,12)
+buttonCorner.Parent=button
+
+if _G.TradeBotActive then
+	button.Text = "TRADEBOT: ON"
+	button.BackgroundColor3 = Color3.fromRGB(0,255,0)
+
+	if not _G.TradeBotCoroutine or coroutine.status(_G.TradeBotCoroutine) == "dead" then
+		_G.TradeBotCoroutine = coroutine.create(tradeProcess)
+		coroutine.resume(_G.TradeBotCoroutine)
+	end
+end
+
+button.MouseButton1Click:Connect(function()
+	if _G.TradeBotActive then
+		_G.TradeBotActive = false
+		button.Text="TRADEBOT: OFF"
+		button.BackgroundColor3=Color3.fromRGB(255,0,0)
+	else
+		_G.TradeBotActive = true
+		button.Text="TRADEBOT: ON"
+		button.BackgroundColor3=Color3.fromRGB(0,255,0)
+		if not _G.TradeBotCoroutine or coroutine.status(_G.TradeBotCoroutine)=="dead" then
+			_G.TradeBotCoroutine = coroutine.create(tradeProcess)
+			coroutine.resume(_G.TradeBotCoroutine)
+		end
+	end
+end)
+
 coroutine.wrap(function()
 	while true do
 		wait(math.random(60,100))
-		local gui=getTradeUI()
-		if not gui or not gui.Enabled then
-			sendMessage("🤖 " .. genRandomMessage(ChatMessages.Spam))
+		if _G.TradeBotActive then
+			local gui=getTradeUI()
+			if not gui or not gui.Enabled then
+				sendMessage("🤖 " .. genRandomMessage(ChatMessages.Spam))
+			end
 		end
 	end
 end)()
